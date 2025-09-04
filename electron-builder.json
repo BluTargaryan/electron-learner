@@ -2,6 +2,9 @@
     "appId": "com.peaceakoja.electron-learner",
 "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
 "icon":"/public/desktopLogo.png",
+"extraResources": [
+    "dist-electron/preload.cjs"
+],
 "files": [
     "dist-electron/**/*",
     "dist-react/**/*"
