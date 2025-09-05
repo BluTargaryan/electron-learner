@@ -1,19 +1,23 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
+import { BaseChart } from './BaseChart'
+import { useStatistics } from './useStatistics'
+import Chart from './Chart'
 
 function App() {
   const [count, setCount] = useState(0)
+const statistics = useStatistics(10)
+const cpuUsages = useMemo(() => statistics.map(stat => stat.ramUsage), [statistics])
 
-useEffect(() => {
-  window.electron.subscribeStatistics((stats) => {
-    console.log(stats)
-  })
-}, [])
 
   return (
     <>
       <div>
+        <div style={{ height: 120}}>
+          <Chart data={cpuUsages} fill="red" stroke="blue" maxDataPoints={10} />
+        </div>
+
         <a href="https://vite.dev" target="_blank">
         </a>
         <a href="https://react.dev" target="_blank">

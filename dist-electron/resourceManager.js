@@ -1,13 +1,14 @@
 import osUtils from 'os-utils';
 import fs from 'fs';
 import os from 'os';
+import { ipcWebContentsSend } from './util.js';
 const POLL_INTERVAL = 5000;
 export function pollResources(mainWindow) {
     setInterval(async () => {
         const cpuUsage = await getCpuUsage();
         const ramUsage = await getRamUsage();
         const storageData = await getStorageData();
-        mainWindow.webContents.send('statistics', { cpuUsage, ramUsage, storageUsage: storageData.usage });
+        ipcWebContentsSend('statistics', mainWindow.webContents, { cpuUsage, ramUsage, storageUsage: storageData.usage });
     }, POLL_INTERVAL);
 }
 export function getStaticData() {

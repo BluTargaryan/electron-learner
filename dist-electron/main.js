@@ -1,8 +1,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
-import path from 'path';
 import { isDev } from './util.js';
 import { pollResources } from './resourceManager.js';
-import { getPreloadPath } from './pathResolver.js';
+import { getPreloadPath, getUIPath } from './pathResolver.js';
 import { getStaticData } from './resourceManager.js';
 app.on('ready', () => {
     const mainWindow = new BrowserWindow({
@@ -16,8 +15,10 @@ app.on('ready', () => {
     }
     else {
         console.log('Loading production build');
-        mainWindow.loadFile(path.join(app.getAppPath(), '/dist-react/index.html'));
+        mainWindow.loadFile(getUIPath());
     }
     pollResources(mainWindow);
-    ipcMain.handle("getStaticData", getStaticData);
+    ipcMain.handle("getStaticData", () => {
+        return getStaticData();
+    });
 });
