@@ -8,7 +8,7 @@ import Chart from './Chart'
 function App() {
   const [count, setCount] = useState(0)
 const statistics = useStatistics(10)
-const cpuUsages = useMemo(() => statistics.map(stat => stat.ramUsage), [statistics])
+const cpuUsages = useMemo(() => statistics.map(stat => stat.cpuUsage*100), [statistics])
 
 
   return (

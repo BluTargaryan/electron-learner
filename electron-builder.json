@@ -3,7 +3,8 @@
 "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
 "icon":"/public/desktopLogo.png",
 "extraResources": [
-    "dist-electron/preload.cjs"
+    "dist-electron/preload.cjs",
+    "src/assets/**"
 ],
 "files": [
     "dist-electron/**/*",
