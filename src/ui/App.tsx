@@ -8,14 +8,32 @@ import Chart from './Chart'
 function App() {
   const [count, setCount] = useState(0)
 const statistics = useStatistics(10)
-const cpuUsages = useMemo(() => statistics.map(stat => stat.cpuUsage*100), [statistics])
+const cpuUsages = useMemo(() => statistics.map(stat => stat.cpuUsage), [statistics])
+const ramUsages = useMemo(() => statistics.map(stat => stat.ramUsage), [statistics])
+const storageUsages = useMemo(() => statistics.map(stat => stat.storageUsage), [statistics])
+const [activeView, setActiveView] = useState<View>('CPU')
+
+useEffect(() => {
+  window.electron.subscribeChangeView((view) => setActiveView(view))
+}, [])
+
+const activeUsages = useMemo(() => {
+  switch (activeView) {
+    case 'CPU':
+      return cpuUsages
+    case 'RAM':
+      return ramUsages
+    case 'STORAGE':
+      return storageUsages
+  }
+}, [activeView, cpuUsages, ramUsages, storageUsages]) 
 
 
   return (
     <>
       <div>
         <div style={{ height: 120}}>
-          <Chart data={cpuUsages} fill="red" stroke="blue" maxDataPoints={10} />
+          <Chart data={activeUsages} fill="red" stroke="blue" maxDataPoints={10} />
         </div>
 
         <a href="https://vite.dev" target="_blank">

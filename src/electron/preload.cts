@@ -5,7 +5,9 @@ const electron = require('electron')
 electron.contextBridge.exposeInMainWorld('electron', {
     subscribeStatistics: (callback) => 
         ipcOn('statistics', (stats: any) => callback(stats)),
-    getStaticData: () => ipcInvoke('staticData'),
+    getStaticData: () => ipcInvoke('getStaticData'),
+    subscribeChangeView: (callback) => 
+        ipcOn('changeView', (view: any) => callback(view)),
 } satisfies Window['electron'])
 
 function ipcInvoke<Key extends keyof EventPayloadMapping>(key:Key):Promise<EventPayloadMapping[Key]>{

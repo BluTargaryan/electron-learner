@@ -4,6 +4,8 @@ type Statistics = {
     storageUsage: number
 }
 
+type View = 'CPU' | 'RAM' | 'STORAGE'
+
 type StaticData = {
     totalStorage: number
     cpuModel: string
@@ -14,12 +16,14 @@ type UnsubscribeFunction = () => void
 
 type EventPayloadMapping = {
     statistics: Statistics
-    staticData: StaticData
+    getStaticData: StaticData
+    changeView: View
 }
 
 interface Window {
     electron: {
         subscribeStatistics: (callback: (statistics: Statistics) => void) => UnsubscribeFunction
         getStaticData: () => Promise<StaticData>
+        subscribeChangeView: (callback: (view: View) => void) => UnsubscribeFunction
     }
 }

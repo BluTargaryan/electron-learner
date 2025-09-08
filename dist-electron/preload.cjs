@@ -3,7 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron = require('electron');
 electron.contextBridge.exposeInMainWorld('electron', {
     subscribeStatistics: (callback) => ipcOn('statistics', (stats) => callback(stats)),
-    getStaticData: () => ipcInvoke('staticData'),
+    getStaticData: () => ipcInvoke('getStaticData'),
+    subscribeChangeView: (callback) => ipcOn('changeView', (view) => callback(view)),
 });
 function ipcInvoke(key) {
     return electron.ipcRenderer.invoke(key);
