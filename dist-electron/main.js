@@ -1,16 +1,18 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
-import { isDev } from './util.js';
+import { app, BrowserWindow, Menu } from 'electron';
+import { ipcMainOn, isDev } from './util.js';
 import { pollResources } from './resourceManager.js';
 import { getPreloadPath, getUIPath } from './pathResolver.js';
 import { getStaticData } from './resourceManager.js';
 import { createTray } from './tray.js';
 import { createMenu } from './menu.js';
+import { ipcMainHandle } from './util.js';
 Menu.setApplicationMenu(null);
 app.on('ready', () => {
     const mainWindow = new BrowserWindow({
         webPreferences: {
             preload: getPreloadPath()
-        }
+        },
+        frame: false
     });
     if (isDev()) {
         console.log('Loading dev server URL');
@@ -21,8 +23,21 @@ app.on('ready', () => {
         mainWindow.loadFile(getUIPath());
     }
     pollResources(mainWindow);
-    ipcMain.handle("getStaticData", () => {
+    ipcMainHandle("getStaticData", () => {
         return getStaticData();
+    });
+    ipcMainOn("sendFrameAction", (payload) => {
+        switch (payload) {
+            case 'CLOSE':
+                mainWindow.close();
+                break;
+            case 'MINIMIZE':
+                mainWindow.minimize();
+                break;
+            case 'MAXIMIZE':
+                mainWindow.maximize();
+                break;
+        }
     });
     createTray(mainWindow);
     handleCloseEvents(mainWindow);

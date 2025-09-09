@@ -32,6 +32,11 @@ const activeUsages = useMemo(() => {
   return (
     <>
       <div>
+      <header>
+        <button id='close' onClick={() => window.electron.sendFrameAction('CLOSE')}/>
+        <button id='minimize' onClick={() => window.electron.sendFrameAction('MINIMIZE')}/>
+        <button id='maximize' onClick={() => window.electron.sendFrameAction('MAXIMIZE')}/>
+      </header>
         <div style={{ height: 120}}>
           <Chart data={activeUsages} fill="red" stroke="blue" maxDataPoints={10} />
         </div>

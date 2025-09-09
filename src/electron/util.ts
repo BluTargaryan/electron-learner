@@ -6,11 +6,19 @@ export function isDev() {
     return process.env.NODE_ENV === 'development'
 }
 
-export function ipcHandle<Key extends keyof EventPayloadMapping>(key:string,handler:()=>EventPayloadMapping[Key]){
+export function ipcMainHandle<Key extends keyof EventPayloadMapping>(key:string,handler:()=>EventPayloadMapping[Key]){
     ipcMain.handle(key, (event)=>{
         if (!event.senderFrame) throw new Error('No sender frame')
         validateEventFrame(event.senderFrame)
         return handler()
+    })
+}
+
+export function ipcMainOn<Key extends keyof EventPayloadMapping>(key:Key,handler: (payload: EventPayloadMapping[Key]) => void){
+    ipcMain.on(key, (event, payload: EventPayloadMapping[Key])=>{
+        if (!event.senderFrame) throw new Error('No sender frame')
+        validateEventFrame(event.senderFrame)
+        return handler(payload)
     })
 }
 

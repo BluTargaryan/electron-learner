@@ -4,12 +4,20 @@ import { pathToFileURL } from "url";
 export function isDev() {
     return process.env.NODE_ENV === 'development';
 }
-export function ipcHandle(key, handler) {
+export function ipcMainHandle(key, handler) {
     ipcMain.handle(key, (event) => {
         if (!event.senderFrame)
             throw new Error('No sender frame');
         validateEventFrame(event.senderFrame);
         return handler();
+    });
+}
+export function ipcMainOn(key, handler) {
+    ipcMain.on(key, (event, payload) => {
+        if (!event.senderFrame)
+            throw new Error('No sender frame');
+        validateEventFrame(event.senderFrame);
+        return handler(payload);
     });
 }
 export function ipcWebContentsSend(key, webContents, payload) {
