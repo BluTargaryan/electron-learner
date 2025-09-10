@@ -6,7 +6,7 @@ import { useStatistics } from './useStatistics'
 import Chart from './Chart'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const staticData = useStaticData()
 const statistics = useStatistics(10)
 const cpuUsages = useMemo(() => statistics.map(stat => stat.cpuUsage), [statistics])
 const ramUsages = useMemo(() => statistics.map(stat => stat.ramUsage), [statistics])
@@ -31,36 +31,52 @@ const activeUsages = useMemo(() => {
 
   return (
     <>
-      <div>
-      <header>
-        <button id='close' onClick={() => window.electron.sendFrameAction('CLOSE')}/>
-        <button id='minimize' onClick={() => window.electron.sendFrameAction('MINIMIZE')}/>
-        <button id='maximize' onClick={() => window.electron.sendFrameAction('MAXIMIZE')}/>
-      </header>
-        <div style={{ height: 120}}>
-          <Chart data={activeUsages} fill="red" stroke="blue" maxDataPoints={10} />
+      <Header />
+        <main>
+        <div>
+          <SelectOption title="CPU" view="CPU" subtitle={staticData?.cpuModel || ''} data={cpuUsages} onClick={() => setActiveView('CPU')} />
+          <SelectOption title="RAM" view="RAM" subtitle={staticData?.totalMemoryGB+ ' GB' || ''} data={ramUsages} onClick={() => setActiveView('RAM')} />
+          <SelectOption title="STORAGE" view="STORAGE" subtitle={staticData?.totalStorage+ ' GB' || ''} data={storageUsages} onClick={() => setActiveView('STORAGE')} />
         </div>
-
-        <a href="https://vite.dev" target="_blank">
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+        <div className="mainGrid">
+          <Chart data={activeUsages} selectedView={activeView} maxDataPoints={10} />
+        </div>
+        
+        </main>
     </>
   )
+}
+
+function Header() {
+  return (
+    <header>
+      <button id='close' onClick={() => window.electron.sendFrameAction('CLOSE')}/>
+      <button id='minimize' onClick={() => window.electron.sendFrameAction('MINIMIZE')}/>
+      <button id='maximize' onClick={() => window.electron.sendFrameAction('MAXIMIZE')}/>
+    </header>
+  )
+}
+
+function SelectOption({title,view,subtitle,data, onClick}:{title:string,view:View,subtitle:string, data:number[], onClick:() => void}){
+  return <button className='selectOption' onClick={onClick}>
+    <div className='selectOptionTitle'>
+    <div>{title}</div>
+    <div>{subtitle}</div>
+    </div>
+    <div className='selectOptionChart'>
+      <Chart data={data} selectedView={view} maxDataPoints={10} />
+    </div>
+  </button>
+}
+
+function useStaticData(){
+  const [staticData, setStaticData] = useState<StaticData | null>(null)
+  useEffect(() => {
+    (async () => {
+      setStaticData(await window.electron.getStaticData())
+    })();
+  }, [])
+  return staticData
 }
 
 export default App

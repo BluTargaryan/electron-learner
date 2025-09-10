@@ -4,11 +4,26 @@ import { BaseChart } from './BaseChart'
 export type ChartProps = {
   data: number[]
   maxDataPoints: number
-  fill: string
-  stroke: string
+  selectedView: "CPU" | "RAM" | "STORAGE"
+}
+
+export const COLOR_MAP = {
+  CPU: {
+    fill: '#076c82',
+    stroke: '#5DD4EE',  
+  },
+  RAM: {
+    fill: '#5F3C07',
+    stroke: '#E99311',
+  },
+  STORAGE: {
+    fill: '#0B5B22',
+    stroke: '#1ACF4D',
+  }
 }
 
 const Chart = (props: ChartProps) => {
+  const color  = useMemo(() => COLOR_MAP[props.selectedView], [props.selectedView])
 const preparedData = useMemo(() =>{ 
     const points = props.data.map(point => ({ value: point*100 }))
 
@@ -17,7 +32,7 @@ const preparedData = useMemo(() =>{
     ,[props.data, props.maxDataPoints]
 )
 
-  return  <BaseChart data={preparedData} fill={props.fill} stroke={props.stroke} />
+  return  <BaseChart data={preparedData} fill={color.fill} stroke={color.stroke} />
 }
 
 export default Chart
